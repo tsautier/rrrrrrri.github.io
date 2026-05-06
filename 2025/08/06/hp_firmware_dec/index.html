@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    
+    <meta name="author" content="Catalpa">
+    
+    <!-- Completely eliminate flash of wrong theme -->
+    <script>
+        (function() {
+            const THEME_KEY = "REDEFINE-THEME-STATUS";
+            const DARK = "dark", LIGHT = "light";
+            
+            // Get preferred theme
+            function getTheme() {
+                try {
+                    const saved = localStorage.getItem(THEME_KEY);
+                    if (saved) {
+                        const { isDark } = JSON.parse(saved);
+                        return isDark ? DARK : LIGHT;
+                    }
+                } catch (e) {}
+                
+                return matchMedia("(prefers-color-scheme: dark)").matches ? DARK : LIGHT;
+            }
+            
+            // Apply theme to document
+            function applyTheme(theme) {
+                const isDark = theme === DARK;
+                const root = document.documentElement;
+                
+                // Set classes for compatibility
+                root.classList.add(theme);
+                root.classList.remove(isDark ? LIGHT : DARK);
+                root.style.colorScheme = theme;
+            }
+            
+            // Initial application
+            const theme = getTheme();
+            applyTheme(theme);
+            
+            // Listen for system preference changes
+            matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
+                // Only update if using system preference (no localStorage entry)
+                if (!localStorage.getItem(THEME_KEY)) {
+                    applyTheme(matches ? DARK : LIGHT);
+                }
+            });
+            
+            // Set body classes ASAP (before DOMContentLoaded)
+            (function() {
+                const addBodyClass = () => {
+                    const b = document.body;
+                    if (!b) return false;
+                    b.classList.add(theme + "-mode");
+                    return true;
+                };
+
+                // Try immediately
+                if (addBodyClass()) return;
+
+                // Observe until body exists
+                const mo = new MutationObserver(() => {
+                    if (addBodyClass()) mo.disconnect();
+                });
+                mo.observe(document.documentElement, { childList: true, subtree: true });
+            })();
+        })();
+    </script>
+    
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://example.com/2025/08/06/hp_firmware_dec/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+    
+        
+        <meta name="description" content="your_description">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HP 打印机固件解密分析">
+<meta property="og:url" content="http://example.com/2025/08/06/hp_firmware_dec/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="your_description">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2025/08/06/hp_firmware_dec/your_image_path">
+<meta property="article:published_time" content="2025-08-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-04T05:56:05.000Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2025/08/06/hp_firmware_dec/your_image_path">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/img/favicon.ico" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon.ico">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <!--- Page Info-->
+    
+    <title>
+        
+            HP 打印机固件解密分析 | Catalpa&#39;s Site
+        
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/css/build/tailwind.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"example.com","root":"/","language":"en","path":"search.json"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":["网络安全爱好者"]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"side_tools":{"gear_rotation":true,"auto_expand":false},"open_graph":{"enable":true,"image":"your_image_path","description":"your_description"},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/img/bk.jpg","dark":"/img/bk.jpg"},"title":"Welcome!","subtitle":{"text":["欢迎来到本站!"],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":false,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":[{"icon":"fa-brands fa-github","url":"https://github.com/rrrrrrri"},{"icon":"fa-solid fa-at","url":"anu11@foxmail.com"},{"icon":"fa-solid fa-at","url":null},{"icon":"fa-brands fa-telegram","url":null},{"icon":"/images/custom-icon.svg","url":null}],"qrs":[{"icon":"fa-brands fa-weixin","qr":null},{"icon":"fa-solid fa-hand-holding-dollar","qr":"/img/w.png"}]}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0","theme":{"light":"default","dark":"dark"}}},"version":"2.9.0","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"归档":{"path":"/archives","icon":"fa-regular fa-archive"},"感谢捐赠":{"path":"/donates","icon":"fa-solid fa-hand-holding-dollar"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur","masonry":{"batch_size":12,"initial_batch_size":24}},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":"读者有责任遵守其所在国家或地区的所有法律，作者不对使用其文章中提到的任何内容所造成的任何损害负责。","show_on_mobile":true,"links":null},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":false,"limit":3},"tags":{"enable":false,"limit":3}},"footer":{"runtime":true,"icon":"<i class=\"fa-solid fa-heart fa-beat\" style=\"--fa-animation-duration: 0.5s; color: #f54545\"></i>","start":"2018/9/1 08:00:00","statistics":true,"customize":null,"icp":{"enable":false,"number":null,"url":null}},"footerStart":"2018/9/1 08:00:00","mermaid":{"style":{"light":"default","dark":"dark"}}};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.i18n = {"search":"Search...","toc":"On this page","prev":"Prev","next":"Next","prev_posts":"Prev posts","next_posts":"Next posts","page":"Page %d","recent_posts":"Recent Posts","share":"Share","powered_by":"POWERED BY %s","theme":"THEME","rss_feed":"RSS Feed","category":"Category","categories":"Categories","tag":"Tag","tags":"Tags","post":"Post","posts":"Posts","tagcloud":"Tag Cloud","comment":"Comment","comments":"Comments","home":"Home","archive":"Archive","archives":"Archives","top":"TOP","sticky":"Sticky","go-back-home":"Go Back Home","masonry_loading":"Loading photos...","image_viewer":"Image viewer","close":"Close","exif":{"title":"EXIF","cards":{"camera":"Camera","lens":"Lens","exposure":"Exposure","other":"Other"},"fields":{"make":"Brand","model":"Model","date_taken":"Date taken","lens_model":"Lens","focal_length":"Focal length","focus_mode":"Focus mode","shutter":"Shutter","aperture":"Aperture","iso":"ISO","exposure_program":"Exposure program","exposure_compensation":"Exposure compensation","metering_mode":"Metering mode","flash":"Flash","white_balance":"White balance","latitude":"Latitude","longitude":"Longitude","altitude":"Altitude"},"status":{"loading":"Loading...","no_exif":"No EXIF available","library_missing":"EXIF library not loaded","image_source_missing":"Image source unavailable","unavailable":"EXIF unavailable (blocked by CORS or missing metadata)","flag_unavailable":"EXIF unavailable"}},"about":"About","changelog":"Changelog","links":"Links","link":"Link","friends":"Friends","friend":"Friend","timeline":"Timeline","shuoshuo":"Shuoshuo","bookmarks":"Bookmarks","site_uv":"VISITOR COUNT","site_pv":"TOTAL PAGE VIEWS","read_more":"Read more","wordcount":"Words","min2read":"Mins","status":"Status","runtime":"Blog up for","days":"days","hours":"hrs","minutes":"Min","seconds":"Sec","optimized_by":"and Optimized by Evan","rights":"All Rights Reserved","site_posts":"%s posts in total","site_wordcount":"%s words in total","copyright":{"author":"Author","title":"Title","link":"Link","create_time":"Created at","update_time":"Updated at","license_title":"License","license_content":"This work is licensed under %s.","all_rights_reserved":"All Rights Reserved &#169; %s","public_domain":"This work is in the public domain."},"ago":{"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"},"create_time":"Created","update_time":"Updated","expired":"This post is written %s days ago, and the content may not be up to date."};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+
+<body>
+	<div class="progress-bar-container">
+	
+
+	
+	<span class="pjax-progress-bar"></span>
+	<!--        <span class="swup-progress-icon">-->
+	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+	<!--        </span>-->
+	
+</div>
+
+<main class="page-container" id="swup">
+
+	
+
+	<div class="main-content-container flex flex-col justify-between min-h-dvh">
+		<div class="main-content-header">
+			<header class="navbar-container px-6 md:px-12">
+    <div class="navbar-content transition-navbar ">
+        <div class="left">
+            
+                <a class="logo-image h-8 w-8 sm:w-10 sm:h-10 mr-3" href="/">
+                    <img src="/img/favicon.ico" class="w-full h-full rounded-xs">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                Catalpa&#39;s Site
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    归档
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/donates"
+                                        >
+                                    <i class="fa-solid fa-hand-holding-dollar fa-fw"></i>
+                                    感谢捐赠
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                归档
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/donates"
+                        >
+                            <span>
+                                感谢捐赠
+                            </span>
+                            
+                                <i class="fa-solid fa-hand-holding-dollar fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">0</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">5</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">74</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+		</div>
+
+		<div class="main-content-body transition-fade-up">
+			
+
+			<div class="main-content">
+				<div class="post-page-container flex relative justify-between box-border w-full h-full">
+	<div class="article-content-container">
+
+		<div class="article-title relative w-full">
+			
+			<div class="w-full flex items-center pt-6 justify-start">
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">HP 打印机固件解密分析</h1>
+			</div>
+			
+		</div>
+
+		
+		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+			<div class="avatar w-[46px] h-[46px] shrink-0 rounded-medium border border-border-color p-px">
+				<img src="/img/logo.png">
+			</div>
+			<div class="info flex flex-col justify-between">
+				<div class="author flex items-center">
+					<span class="name text-default-text-color text-lg font-semibold">Catalpa</span>
+					
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">网络安全爱好者</span>
+					
+				</div>
+				<div class="meta-info">
+					<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2025-08-06</span>
+        <span class="mobile">2025-08-06</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2026-03-04 13:56:05</span>
+            <span class="mobile">2026-03-04 13:56:05</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Printer/">Printer</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+
+		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+			<p>本文介绍作者在研究 HP 某型号打印机时遇到的固件加密问题，并在分析固件加密方案后编写了一组工具可以用于解密此类固件。</p>
+<span id="more"></span>
+
+<h1 id="目标简介"><a href="#目标简介" class="headerlink" title="目标简介"></a>目标简介</h1><p>HP 公司在全球打印机市场占据重要份额，是”打印王国”的领头羊。近年来随着全球网络安全形势日益复杂，类似打印机等智能设备开始进入恶意攻击者的视线。同时在全球知名黑客比赛 Pwn2Own 中，HP 打印机作为比赛项目也时有登场。</p>
+<p>在打印机市场中，利润率最高的通常并不是打印机硬件，而是各类耗材。因此市面上有很多人尝试使用第三方耗材来降低成本，而使用此类耗材就需要绕过打印机系统中的有关限制。厂商为了能够售出更多官方耗材，每次更新也会向系统中添加更多限制和检查，这是一个不断演进的过程，所以打印机厂商一般会选择应用固件加密等多种安全手段，来增加逆向破解打印机的难度。</p>
+<p>按操作系统来说，HP 打印机主要有基于 Linux 以及 RTOS 两种，无论哪种系统，其固件加密方式应该是类似的，本次研究，我选择 HP OfficeJet Pro 8210 作为目标。OfficeJet Pro 8210 是一款发布时间较早的打印机，它使用了 Linux 作为底层操作系统，某种程度上会比 RTOS 更方便分析。</p>
+<h1 id="提取固件"><a href="#提取固件" class="headerlink" title="提取固件"></a>提取固件</h1><p>近年来曾在 Pwn2Own 上成功破解 HP 打印机的团队如 DEVCORE、neodyme 等都发布过相关漏洞分析文章，但似乎并没有详细描述固件解密方法，其中 neodyme 团队在他们的<a class="link"   target="_blank" rel="noopener" href="https://neodyme.io/en/blog/pwn2own-2022_printer_rce/#firmware-decryption" >文章<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>中提到了部分固件加密策略，但没有发布解密工具：</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1.A static XOR-”encrypted” key</span><br><span class="line">2.The HP internal firmware project name</span><br><span class="line">3.The checksum of the decompressed firmware blob</span><br></pre></td></tr></table></figure></div>
+
+<p>由于没有公开的固件解密方法，并且暂时也无法获取设备的 Shell 权限，我们考虑直接从设备 Flash 芯片中读取固件内容。将打印机拆机后取出主板，在主板背面可以找到一颗型号为 29f2g08abaea 的 NAND Flash 芯片，如下图所示(红色方框)：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/img/hp_firmware_dec1.png"
+                     
+                ></p>
+<p>将 Flash 芯片用热风枪拆下，离线使用编程器读取内容，由于 NAND 芯片的特性，需要在本地将数据中的 ECC 等校验数据去除。</p>
+<p>查询芯片手册发现，该芯片采用 Data area + Spare area 形式组织数据，每个 page 2112 字节，前面 2048 字节为用户数据，后面 64 字节为 ECC 数据，每个 Block 由 64 个 Page 组成，坏块标记 0x00。根据手册中的信息，可以编写脚本来处理原始数据，清除 ECC 校验内容。</p>
+<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">process_file</span>(<span class="params">input_file_path, output_file_path</span>):</span><br><span class="line">    chunk_size = <span class="number">2112</span></span><br><span class="line">    bytes_to_write = <span class="number">2048</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">with</span> <span class="built_in">open</span>(input_file_path, <span class="string">&#x27;rb&#x27;</span>) <span class="keyword">as</span> input_file, <span class="built_in">open</span>(output_file_path, <span class="string">&#x27;wb&#x27;</span>) <span class="keyword">as</span> output_file:</span><br><span class="line">            <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">                <span class="comment"># Read a chunk of data</span></span><br><span class="line">                data = input_file.read(chunk_size)</span><br><span class="line">                </span><br><span class="line">                <span class="comment"># If less than 2112 bytes are read, it means end of file</span></span><br><span class="line">                <span class="keyword">if</span> <span class="keyword">not</span> data:</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">                <span class="comment"># Write only the first 2048 bytes to the output file</span></span><br><span class="line">                output_file.write(data[:bytes_to_write])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">except</span> IOError <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;An error occurred: <span class="subst">&#123;e&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Example usage</span></span><br><span class="line">input_file_path = <span class="string">&#x27;READ1.BIN&#x27;</span></span><br><span class="line">output_file_path = <span class="string">&#x27;OUTPUT.BIN&#x27;</span></span><br><span class="line">process_file(input_file_path, output_file_path)</span><br></pre></td></tr></table></figure></div>
+
+<p>对处理后的文件进行 binwalk，结果为：</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">DECIMAL       HEXADECIMAL     DESCRIPTION</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line">133120        0x20800         PC bitmap, Windows 3.x format,, 480 x 272 x 24</span><br><span class="line">777188        0xBDBE4         Zlib compressed data, best compression</span><br><span class="line">777224        0xBDC08         Zlib compressed data, best compression</span><br><span class="line">777260        0xBDC2C         Zlib compressed data, best compression</span><br><span class="line">777296        0xBDC50         Zlib compressed data, best compression</span><br><span class="line">777332        0xBDC74         Zlib compressed data, best compression</span><br><span class="line">777368        0xBDC98         Zlib compressed data, best compression</span><br><span class="line">777400        0xBDCB8         Zlib compressed data, best compression</span><br><span class="line">777452        0xBDCEC         Zlib compressed data, best compression</span><br><span class="line">777488        0xBDD10         Zlib compressed data, best compression</span><br><span class="line">778040        0xBDF38         Zlib compressed data, best compression</span><br><span class="line">778548        0xBE134         Zlib compressed data, best compression</span><br><span class="line">781700        0xBED84         Zlib compressed data, best compression</span><br><span class="line">781812        0xBEDF4         Zlib compressed data, best compression</span><br><span class="line">782452        0xBF074         Zlib compressed data, best compression</span><br><span class="line">782552        0xBF0D8         Zlib compressed data, best compression</span><br><span class="line">787668        0xC04D4         Zlib compressed data, best compression</span><br><span class="line">792384        0xC1740         Zlib compressed data, best compression</span><br><span class="line">793424        0xC1B50         Zlib compressed data, best compression</span><br><span class="line">794692        0xC2044         Zlib compressed data, best compression</span><br><span class="line">796292        0xC2684         Zlib compressed data, best compression</span><br><span class="line">796376        0xC26D8         Zlib compressed data, best compression</span><br><span class="line">797912        0xC2CD8         Zlib compressed data, best compression</span><br><span class="line">802320        0xC3E10         Zlib compressed data, best compression</span><br><span class="line">802920        0xC4068         Zlib compressed data, best compression</span><br><span class="line">803168        0xC4160         Zlib compressed data, best compression</span><br><span class="line">803320        0xC41F8         Zlib compressed data, best compression</span><br><span class="line">805900        0xC4C0C         Zlib compressed data, best compression</span><br><span class="line">806484        0xC4E54         Zlib compressed data, best compression</span><br><span class="line">811676        0xC629C         Zlib compressed data, best compression</span><br><span class="line">811793        0xC6311         Zlib compressed data, best compression</span><br><span class="line">812456        0xC65A8         Zlib compressed data, best compression</span><br><span class="line">813092        0xC6824         Zlib compressed data, best compression</span><br><span class="line">814160        0xC6C50         Zlib compressed data, best compression</span><br><span class="line">817516        0xC796C         Zlib compressed data, best compression</span><br><span class="line">822232        0xC8BD8         Zlib compressed data, best compression</span><br><span class="line">822932        0xC8E94         Zlib compressed data, best compression</span><br><span class="line">823988        0xC92B4         Zlib compressed data, best compression</span><br><span class="line">824100        0xC9324         Zlib compressed data, best compression</span><br><span class="line">825260        0xC97AC         Zlib compressed data, best compression</span><br><span class="line">825772        0xC99AC         Zlib compressed data, best compression</span><br><span class="line">825876        0xC9A14         Zlib compressed data, best compression</span><br><span class="line">826408        0xC9C28         Zlib compressed data, best compression</span><br><span class="line">4030464       0x3D8000        Linux kernel ARM boot executable zImage (little-endian)</span><br><span class="line">4048440       0x3DC638        gzip compressed data, maximum compression, from Unix, last modified: 1970-01-01 00:00:00 (null date)</span><br><span class="line">7483392       0x723000        Flattened device tree, size: 11781 bytes, version: 17</span><br><span class="line">23461888      0x1660000       UBI erase count header, version: 1, EC: 0x1, VID header offset: 0x800, data offset: 0x1000</span><br><span class="line">261621760     0xF980800       PC bitmap, Windows 3.x format,, 480 x 272 x 24</span><br><span class="line">262772736     0xFA99800       Linux kernel ARM boot executable zImage (little-endian)</span><br><span class="line">262790712     0xFA9DE38       gzip compressed data, maximum compression, from Unix, last modified: 1970-01-01 00:00:00 (null date)</span><br><span class="line">266225664     0xFDE4800       Flattened device tree, size: 11802 bytes, version: 17</span><br></pre></td></tr></table></figure></div>
+
+<p>这样就拿到了未加密的固件数据。</p>
+<h1 id="解密分析"><a href="#解密分析" class="headerlink" title="解密分析"></a>解密分析</h1><p>从 binwalk 结果来看，该设备使用的是 ARM 架构 CPU 和 Linux 系统，同时使用 UBI 作为文件系统。将固件中 UBI 的部分提取出来，使用 UBI Reader 解压。</p>
+<p>解压后得到一个标准的 Linux 根文件系统，下一步要确定是哪个程序负责执行固件升级操作。我们先从 HP 官方网站下载 OfficeJet Pro 8210 的升级包，尝试通过升级包中的信息来定位升级程序。</p>
+<p>下载到的升级包为 exe 格式，可以从中解压出 .ful2 格式的更新文件，此文件基本是一个 PJL 格式的描述文件，也就是说，当在本地执行升级程序时，会将这个更新文件发送到打印机 PJL 服务中，由 PJL 执行升级动作。</p>
+<p>从 PJL 命令中能够定位到一些有用的信息</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@PJL COMMENT MODEL=HP OfficeJet Pro 8210</span><br><span class="line">@PJL COMMENT VERSION=TESPDLPP1N001.2514A.00</span><br><span class="line">@PJL COMMENT DATECODE=20250403</span><br><span class="line">@PJL UPGRADE SIZE=64534679</span><br><span class="line">@PJL ENTER LANGUAGE=FWUPDATE2</span><br></pre></td></tr></table></figure></div>
+
+<p>从上述信息可以知道，这个升级包用于 HP OfficeJet Pro 8210 设备，它的版本是 2514A，升级包大小为 64534679，PJL 内部需要调用 FWUPDATE2 命令来处理后续数据。</p>
+<p>在解压出的文件系统中搜索 FWUPDATE2 字符串，能够定位到 plang 程序，简单逆向后发现它只是一个 PJL 解析服务，不包含和固件解密&#x2F;升级有关的操作。</p>
+<p>继续分析升级包内容，其中还包含一段 XML 格式的数据</p>
+<div class="code-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&#x27;1.0&#x27; encoding=&#x27;UTF-8&#x27;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">manifest</span> <span class="attr">xsi:noNamespaceSchemaLocation</span>=<span class="string">&#x27;webfwupdate.xsd&#x27;</span> <span class="attr">xmlns:xsi</span>=<span class="string">&#x27;http://www.w3.org/2001/XMLSchema-instance&#x27;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>0.9<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">signature</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">signature_template_id</span>&gt;</span>49be5195-1daa-474a-a957-1aa4ae38d9b1<span class="tag">&lt;/<span class="name">signature_template_id</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">public_key_id</span>&gt;</span>bdfcc564-a078-4112-a089-179e73831f27<span class="tag">&lt;/<span class="name">public_key_id</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">signature_value</span>&gt;</span>AgIAAAFrABQBADp+CGMl0KV41veITeohrqqhhpjUIN8AUS5suiRA4lQ8bt7g7U6gBo8B7roClXh8V3rDBfUdki+BkMXMcMVuKJLeThLxSuq09d0NrZxcbpgAe/VON/rD0JGSFGWUDHoJOqyTNipxgDzUxwnGBf/bC5IYIUsDo8Y24jZ0ItuVL3ZUBoQVUuyrskc3pMQXyWO3inuUGYezvppaiMxTwzeKujpqSMt7bp6quPXVXuapc26GXvtbZKgCQMjhJi2mImoWu5uAbb8ll/z57wWV9zmF0vhGBFts4l3dwBzEyRnjQ3NSGhJG6/cHskiUYwM77ADnIpWNKu1+9JzVfZKqw8XFFe8=<span class="tag">&lt;/<span class="name">signature_value</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">digest</span>&gt;</span>E3p+JOq7kzU0lzf141hIpQypfz9Dlm6RhxSEiQN9mdc=<span class="tag">&lt;/<span class="name">digest</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">signature</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">signedInfo</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">update_type</span>&gt;</span>optional<span class="tag">&lt;/<span class="name">update_type</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">current_revision</span>&gt;</span>ANY<span class="tag">&lt;/<span class="name">current_revision</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">updated_revision</span>&gt;</span>TESPDLPP1N001.2514A.00<span class="tag">&lt;/<span class="name">updated_revision</span>&gt;</span></span><br><span class="line">		</span><br><span class="line">		</span><br><span class="line">		<span class="tag">&lt;<span class="name">LBI_blob</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">blob_path</span>&gt;</span>TESPDLPP1N001.2514A.00/lbi_blob.TESPDLPP1N001.2514A.00_from_ANY<span class="tag">&lt;/<span class="name">blob_path</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">size_compressed</span>&gt;</span>6555032<span class="tag">&lt;/<span class="name">size_compressed</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">size_uncompressed</span>&gt;</span>7406784<span class="tag">&lt;/<span class="name">size_uncompressed</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">blob_digest_compressed</span>&gt;</span>Mh5oeVTudC4g/nbC312B8jpmvWlzLg/SxOwtfmXTN9I=<span class="tag">&lt;/<span class="name">blob_digest_compressed</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">blob_digest_uncompressed</span>&gt;</span>JbxisevJymAZhQ8qfCJNJ10V7jDbllnsHgaPmuRfRKo=<span class="tag">&lt;/<span class="name">blob_digest_uncompressed</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">LBI_blob</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">rootfs_blob</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">blob_path</span>&gt;</span>TESPDLPP1N001.2514A.00/rootfs.TESPDLPP1N001.2514A.00_from_ANY<span class="tag">&lt;/<span class="name">blob_path</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">size_compressed</span>&gt;</span>57977683<span class="tag">&lt;/<span class="name">size_compressed</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">size_uncompressed</span>&gt;</span>77463552<span class="tag">&lt;/<span class="name">size_uncompressed</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">blob_digest_compressed</span>&gt;</span>wlOQbDzmdmHyTKgnzvzZ9L0xr7+sWTS775Ku0fF3R8Q=<span class="tag">&lt;/<span class="name">blob_digest_compressed</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">blob_digest_uncompressed</span>&gt;</span>Ny6XZGGWxpzhg7gQLquITQ7TBEh/CR0FVLeCOMquNcU=<span class="tag">&lt;/<span class="name">blob_digest_uncompressed</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">rootfs_blob</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">signedInfo</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>这段数据包含升级包的版本、校验和等信息，那么系统在执行升级操作时肯定会对这段数据进行解析，所以尝试搜索其中的 xml 标签名，例如 <code>signature_template_id</code>，最终定位到 fwupd 程序，根据文件名也大致能确定这个程序和固件升级有关。</p>
+<p>逆向分析此程序，搜索 xml 标签名定位到函数 A，我将之命名为 <code>do_parse_firmware_xml</code>，这个函数首先解析上面这段 xml 数据，可以称之为元数据，函数将解析得到的各个部分保存到 <code>/sirius/rw/var/lib/fwupd/fwupd_manifest.sig</code> 文件中。然后计算这段 xml 数据的 SHA256 值，和其中的 digest 进行比较，通过之后程序将 <code>fwupd_manifest.sig</code> 文件作为参数调用<code>send_to_check_sig</code> 函数，进行签名验证操作。</p>
+<p>以上初步验证通过后，程序还会对版本做一定的检查，这可能是为了防止固件降级，但由于大部分固件这个字段都是 ANY，所以可以忽略这个检查。</p>
+<p>在完成上面的分析之后，后续程序如何对固件进行解密就无法直接定位了，因为程序采用 C++ 编写，包含大量虚函数和间接调用，难以直接通过函数引用定位关键逻辑。这时想起 neodyme 文章中提及，固件是采用 AES 算法进行加密的，所以在程序中搜索和 AES 相关的 API 名称，找到了 <code>gen_aes_key</code> 函数：</p>
+<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> __fastcall <span class="title function_">gen_aes_key</span><span class="params">(aes_object *aes_object, <span class="type">char</span> *part4, <span class="type">int</span> is_any)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  qmemcpy(part1, <span class="string">&quot;@* WebFWUpdate&quot;</span>, <span class="number">14</span>);</span><br><span class="line">  result = SHA256_Init(v15);</span><br><span class="line">  <span class="keyword">if</span> ( result )</span><br><span class="line">  &#123;</span><br><span class="line">    get_unknown_part(&amp;part2);</span><br><span class="line">    get_unknown_part2(&amp;part3);</span><br><span class="line">    SHA256_Update(v15, part1, <span class="number">14</span>);</span><br><span class="line">    SHA256_Update(v15, part2, *(part2 - <span class="number">12</span>));</span><br><span class="line">    <span class="keyword">if</span> ( !is_any )</span><br><span class="line">      SHA256_Update(v15, part3, *(part3 - <span class="number">12</span>));</span><br><span class="line">    SHA256_Update(v15, part4, <span class="number">32</span>);</span><br><span class="line">    SHA256_Final(v14, v15);</span><br><span class="line">    AES_set_decrypt_key(v14, <span class="number">128</span>, aes_object-&gt;KEY);</span><br><span class="line">    <span class="comment">//. ...</span></span><br><span class="line">  &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>这段代码调用了 <code>AES_set_decrypt_key</code> 函数来设置 AES 密钥，也是 fwupd 程序中唯一一处设置密钥的位置。分析函数逻辑，AES 密钥应该是 <code>SHA256(&quot;@* WebFWUpdate&quot; + part2 + part3 + part4)</code> 取结果的前 16 字节。</p>
+<p>part2 是在 <code>get_unknown_part</code> 函数中赋值的：</p>
+<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> *__fastcall <span class="title function_">get_unknown_part</span><span class="params">(<span class="type">int</span> p_part2)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">string</span> *p_part2_1; <span class="comment">// r0</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> ( check_unknown_flag(&amp;dword_4B570) )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span>::<span class="built_in">string</span>(p_part2, unknown1);</span><br><span class="line">    <span class="keyword">return</span> p_part2;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    p_part2_1 = p_part2;</span><br><span class="line">    *p_part2 = &amp;maybe_empty_string;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> p_part2_1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>实际上就是把 unknown1 赋值给 part2，通过交叉引用又找到了给 unknown1 赋值的代码：</p>
+<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line">stream = fopen(<span class="string">&quot;/rfs/.bio_pkg&quot;</span>, <span class="string">&quot;rb&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> ( stream )</span><br><span class="line">&#123;</span><br><span class="line">v26 = &amp;maybe_empty_string;</span><br><span class="line"><span class="keyword">while</span> ( fgets(data, <span class="number">100</span>, stream) )</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">if</span> ( !<span class="built_in">strncmp</span>(data, <span class="string">&quot;BIO_FW_REV=&quot;</span>, <span class="number">11u</span>) )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">data[<span class="number">0</span>] = <span class="built_in">tolower</span>(*v12);</span><br><span class="line">data[<span class="number">1</span>] = <span class="built_in">tolower</span>(v12[<span class="number">1</span>]);</span><br><span class="line">data[<span class="number">2</span>] = <span class="built_in">tolower</span>(v12[<span class="number">2</span>]);</span><br><span class="line">data[<span class="number">3</span>] = <span class="built_in">tolower</span>(v12[<span class="number">3</span>]);</span><br><span class="line">data[<span class="number">4</span>] = <span class="built_in">tolower</span>(v12[<span class="number">4</span>]);</span><br><span class="line">data[<span class="number">5</span>] = <span class="built_in">tolower</span>(v12[<span class="number">5</span>]);</span><br><span class="line">data[<span class="number">6</span>] = <span class="number">0</span>;</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span>::<span class="built_in">string</span>(&amp;v27, data, &amp;v26);</span><br><span class="line">&#125;</span><br><span class="line">unknown1_1 = ::unknown1;</span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure></div>
+
+<p>实际上是将 &#x2F;.bio_pkg 文件中的 <code>BIO_FW_REV</code> 字段的前 6 个字节转换为小写赋值给 unknown1，进一步分析，就是将固件的开发代号赋值给 part2，以 OfficeJet Pro 8210 为例，这个固件代号是 xml 元数据中 <code>updated_revision</code> 参数的前六个字符即 <code>tespdl</code>。</p>
+<p>part3 是否要参与运算取决于 <code>is_any</code> 参数的值，实际上就是固件中的 <code>current_revision</code>，如果它是 ANY 的话就不需要考虑 part3。</p>
+<p>part4 是外部传入的参数，由于缺少函数调用关系，无法直接确定它是什么数据。依次分析可能的函数，最终找到了 <code>do_upgrade</code>，它应该是负责固件解密和升级的关键函数。此函数首先生成 AES 密钥，然后进入一个循环，在循环中判断当前正在处理哪个 blob，接着通过 fork 生成子进程，等待管道信息。</p>
+<p>在父进程中，会调用 <code>decrypt_data</code> 函数来对数据做 AES 解密。解密是分块进行的，每 0x10000 作为一个 block，每解密一块数据，就调用 inflate 函数对数据进行 zlib 解压。</p>
+<p>通过分析 <code>do_upgrade</code> 的解密和解压逻辑，能够进一步确定升级包的文件格式：</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Magic 区块: \x1b%-12345@PJL\x0a</span><br><span class="line">固件基础信息区块: @PJL COMMENT xxx=xxx\x0a</span><br><span class="line">固件大小: @PJL UPGRADE SIZE=xxx\x0a</span><br><span class="line">Magic 区块结束: \x1b%-12345@PJL COMMENT (null)\x0a</span><br><span class="line">进入固件升级命令: @PJL ENTER LANGUAGE=FWUPDATE2\x0a</span><br><span class="line">Metadata 长度: 16 进制 xxx\x0a</span><br><span class="line">Metadata: XML 格式的数据，包含关键信息</span><br><span class="line">blob 长度: 16 进制 xxx\x0a</span><br><span class="line">blob 数据: xxx</span><br><span class="line">blob 长度: 16 进制 xxx\x0a</span><br><span class="line">blob 数据: xxx</span><br><span class="line">...</span><br></pre></td></tr></table></figure></div>
+
+<p>关键点在于解压数据之后，会调用 fwrite 将数据写入本地文件，然后调用 <code>SHA256_Update</code> 更新一个 SHA256 值。当全部数据都处理完毕，代码会将计算得到的 SHA256 值和变量 x 做比较，而这个变量 x 恰好是用来生成 AES 密钥的参数 part4，因此可以推测 part4 就是固件中对应 blob 的 <code>blob_digest_uncompressed</code> 值。</p>
+<p>现在来总结一下固件解密过程，首先是 xml 元数据中，一些标签的含义：</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">signature_template_id: 未知</span><br><span class="line">public_key_id: 用于检查固件完整性的公钥 ID</span><br><span class="line">signature_value: 固件签名数据</span><br><span class="line">digest: Metadata 数据的 SHA256 值</span><br><span class="line"></span><br><span class="line">其中，digest 验证方法为：获取 signedInfo 中的每个字符串值，拼接起来计算 SHA256 值，与 signature 中的 digest 进行比较。</span><br><span class="line"></span><br><span class="line">update_type: 固件升级类型，一般为 optional</span><br><span class="line">current_revision: 使用该固件升级的版本限制，为 ANY 时表示无版本限制</span><br><span class="line">updated_revision: 该固件的版本</span><br><span class="line"></span><br><span class="line">LBI_blob、rootfs_blob: 固件的主体数据，其中 rootfs_blob 就是文件系统。一般情况下固件只包含 LBI 和 rootfs，还可以包含 patch、recovery 等 blob</span><br><span class="line"></span><br><span class="line">blob_path: blob 解密后存放的逻辑位置</span><br><span class="line">size_compressed: 压缩后的 blob 大小</span><br><span class="line">size_uncompressed: 解压后的 blob 大小</span><br><span class="line">blob_digest_compressed: 压缩后的 blob Checksum (SHA256)</span><br><span class="line">blob_digest_uncompressed: 解压后的 blob Checksum (SHA256)</span><br></pre></td></tr></table></figure></div>
+
+<p>具体的固件解密方式：</p>
+<ol>
+<li>通过解析 Metadata，可以将各个 blob 从固件中分割出来。</li>
+<li>首先要计算一个 AES 密钥，计算方式为 <code>SHA256(&quot;@* WebFWUpdate&quot; + 固件代号 + blob_digest_uncompressed)[:16]</code>，IV 为 0x00 * 16。</li>
+<li>使用计算得到的 AES 密钥对 blob 进行解密，解密得到的数据计算 SHA256 值应该和 <code>blob_digest_compressed</code> 相同。</li>
+<li>对解密的 blob 进行 zlib inflate 解压缩，得到的数据长度应该和 <code>size_uncompressed</code> 相同，计算 SHA256 值应该和 <code>blob_digest_uncompressed</code> 相同。</li>
+</ol>
+<p>综合以上思路，我编写了一个小工具可以用来解密 HP 打印机固件(可能无法覆盖全部型号)，你可以在 <a class="link"   target="_blank" rel="noopener" href="https://github.com/rrrrrrri/hp-firmware-dec" >GitHub<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> 上获取。</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a class="link"   target="_blank" rel="noopener" href="https://neodyme.io/en/blog/pwn2own-2022_printer_rce/" >https://neodyme.io/en/blog/pwn2own-2022_printer_rce/<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a><br><a class="link"   target="_blank" rel="noopener" href="https://devco.re/blog/2023/11/06/your-printer-is-not-your-printer-hacking-printers-pwn2own-part2/" >https://devco.re/blog/2023/11/06/your-printer-is-not-your-printer-hacking-printers-pwn2own-part2/<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a><br><a class="link"   target="_blank" rel="noopener" href="https://vegamay.li/printer-part2" >https://vegamay.li/printer-part2<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a><br><a class="link"   target="_blank" rel="noopener" href="https://www.jsof-tech.com/unpacking-hp-firmware-updates-part-1/" >https://www.jsof-tech.com/unpacking-hp-firmware-updates-part-1/<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
+
+		</div>
+
+		
+		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+			<div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> HP 打印机固件解密分析</li>
+        <li><strong>Author:</strong> Catalpa</li>
+        <li><strong>Created at
+                :</strong> 2025-08-06 00:00:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2026-03-04 13:56:05
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://wzt.ac.cn/2025/08/06/hp_firmware_dec/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+		</div>
+		
+
+		
+
+		
+
+		
+		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+			
+			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="prev" rel="prev" href="/2025/11/19/CVE-2025-64446/">
+					<span class="left arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-left"></i>
+					</span>
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">CVE-2025-64446 &amp; 其它漏洞</span>
+						<span class="post-nav-item">Prev posts</span>
+					</span>
+				</a>
+			</div>
+			
+			
+			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="next" rel="next" href="/2025/06/03/CVE-2025-32756/">
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">CVE-2025-32756</span>
+						<span class="post-nav-item">Next posts</span>
+					</span>
+					<span class="right arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-right"></i>
+					</span>
+				</a>
+			</div>
+			
+		</div>
+		
+
+
+		
+	</div>
+
+	
+	<div class="toc-content-container">
+		<div class="post-toc-wrap">
+	<div class="post-toc">
+		<div class="toc-title">On this page</div>
+		<div class="page-title">HP 打印机固件解密分析</div>
+		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E7%AE%80%E4%BB%8B"><span class="nav-text">目标简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%90%E5%8F%96%E5%9B%BA%E4%BB%B6"><span class="nav-text">提取固件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E5%AF%86%E5%88%86%E6%9E%90"><span class="nav-text">解密分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-text">参考链接</span></a></li></ol>
+
+	</div>
+</div>
+	</div>
+	
+</div>
+
+			</div>
+
+			
+		</div>
+
+		<div class="main-content-footer">
+			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2018</span>
+              -
+            
+            2026&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Catalpa</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        74 posts in total
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
+            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
+                
+                    <span id="busuanzi_container_site_uv" class="lg:!block">
+                        <span class="text-sm">VISITOR COUNT</span>
+                        <span id="busuanzi_value_site_uv"></span>
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv" class="lg:!block">
+                        <span class="text-sm">TOTAL PAGE VIEWS</span>
+                        <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.9.0</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+		</div>
+	</div>
+
+	
+	<div class="post-tools">
+		<div class="post-tools-container">
+	<ul class="article-tools-list">
+		<!-- TOC aside toggle -->
+		
+		<li class="right-bottom-tools page-aside-toggle">
+			<i class="fa-regular fa-outdent"></i>
+		</li>
+		
+
+		<!-- go comment -->
+		
+	</ul>
+</div>
+	</div>
+	
+
+	<div class="right-side-tools-container">
+		<div class="side-tools-container">
+	<ul class="hidden-tools-list">
+		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-plus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-minus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+			<i class="fa-regular fa-moon"></i>
+		</li>
+
+		<!-- rss -->
+		
+
+		
+
+		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+			<i class="fa-regular fa-arrow-down"></i>
+		</li>
+	</ul>
+
+	<ul class="visible-tools-list">
+		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+			<i class="fa-regular fa-cog fa-spin"></i>
+		</li>
+		
+		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+			<i class="arrow-up fas fa-arrow-up"></i>
+			<span class="percent"></span>
+		</li>
+		
+		
+	</ul>
+</div>
+	</div>
+
+	<div class="image-viewer-container" role="dialog" aria-modal="true" aria-label="Image viewer">
+	<button class="image-viewer-close" type="button" aria-label="Close">
+		<i class="fa-solid fa-xmark"></i>
+	</button>
+	<button class="image-viewer-prev" type="button" aria-label="Prev">
+		<i class="fa-solid fa-chevron-left"></i>
+	</button>
+	<div class="image-viewer-frame">
+		<img src="" alt="">
+	</div>
+	<div class="image-viewer-exif-panel hidden absolute left-1/2 bottom-20 -translate-x-1/2 w-[min(92vw,420px)] max-h-[60vh] overflow-hidden rounded-2xl bg-background-color-transparent-80 p-4 text-left shadow-redefine-flat backdrop-blur-md" role="dialog" aria-label="EXIF" aria-hidden="true">
+		<div class="flex items-center justify-between mb-3">
+			<span class="text-sm font-semibold text-first-text-color">EXIF</span>
+			<button class="image-viewer-exif-close flex h-8 w-8 items-center justify-center rounded-full bg-background-color-transparent-80 text-first-text-color transition hover:bg-background-color-transparent-40" type="button" aria-label="Close">
+				<i class="fa-solid fa-xmark text-[0.65rem]"></i>
+			</button>
+		</div>
+		<div class="image-viewer-exif-cards grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto pr-1 scrollbar-hide"></div>
+		<template class="image-viewer-exif-card-template">
+			<div class="rounded-lg bg-background-color-transparent-40 px-3 py-2">
+				<div class="image-viewer-exif-card-header flex items-center gap-2 mb-1">
+					<i class="image-viewer-exif-card-icon fa-solid fa-circle-info text-xs text-third-text-color"></i>
+					<div class="image-viewer-exif-card-title text-xs font-semibold text-first-text-color"></div>
+				</div>
+				<div class="image-viewer-exif-card-items flex flex-col gap-1"></div>
+			</div>
+		</template>
+	</div>
+	<button class="image-viewer-exif-toggle flex items-center gap-2 hidden absolute left-1/2 bottom-6 -translate-x-1/2 rounded-full border border-border-color bg-background-color-transparent-80 px-4 py-2 text-first-text-color backdrop-blur-md transition hover:bg-background-color-transparent-40" type="button" aria-label="EXIF" aria-expanded="false">
+		<i class="fa-solid fa-circle-info text-xs"></i>
+		<span class="text-xs font-semibold uppercase tracking-wider">EXIF</span>
+	</button>
+	<button class="image-viewer-next" type="button" aria-label="Next">
+		<i class="fa-solid fa-chevron-right"></i>
+	</button>
+</div>
+
+
+	
+	<div class="search-pop-overlay">
+	<div class="popup search-popup">
+		<div class="search-header">
+			<span class="search-input-field-pre">
+				<i class="fa-solid fa-keyboard"></i>
+			</span>
+			<div class="search-input-container">
+				<input autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Search..." spellcheck="false" type="search" class="search-input">
+			</div>
+			<span class="popup-btn-close">
+				<i class="fa-solid fa-times"></i>
+			</span>
+		</div>
+		<div id="search-result">
+			<div id="no-result">
+				<i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+			</div>
+		</div>
+	</div>
+</div>
+	
+
+</main>
+
+
+
+<script src="/js/build/libs/Swup.min.js"></script>
+
+<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    window.swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+
+    window.dispatchEvent(
+        new CustomEvent("redefine:swup:ready", {
+            detail: {
+                swup: window.swup,
+            },
+        }),
+    );
+</script>
+
+
+
+
+	
+<script src="/js/build/main.js" type="module"></script>
+
+
+
+    
+<script src="/js/build/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+
+
+
+  
+<script src="/js/build/libs/Typed.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
+
+
+
+	
+</body>
+
+</html>
